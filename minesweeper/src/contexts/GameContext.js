@@ -2,6 +2,17 @@ import React, { createContext, useState, useEffect, useCallback } from 'react';
 
 export const GameContext = createContext();
 
+const calculateInitialFlags = (difficulty) => {
+  switch (difficulty) {
+    case 'medium':
+      return 40;
+    case 'hard':
+      return 99;
+    default:
+      return 10;
+  }
+};
+
 const generateBoard = (difficulty) => {
   let rows, cols, mines;
   switch (difficulty) {
@@ -88,11 +99,11 @@ export const GameProvider = ({ children }) => {
   const [board, setBoard] = useState(savedState?.board || generateBoard(difficulty));
   const [gameStatus, setGameStatus] = useState(savedState?.gameStatus || 'playing');
   const [isFirstTurn, setIsFirstTurn] = useState(savedState?.isFirstTurn ?? true);
+  const [flagCount, setFlagCount] = useState(savedState?.flagCount || calculateInitialFlags(difficulty));
 
-  // Save game state to localStorage whenever it changes
   useEffect(() => {
-    saveGameState({ difficulty, board, gameStatus, isFirstTurn });
-  }, [difficulty, board, gameStatus, isFirstTurn]);
+    saveGameState({ difficulty, board, gameStatus, isFirstTurn, flagCount });
+  }, [difficulty, board, gameStatus, isFirstTurn, flagCount]);
 
   const resetGame = useCallback((newDifficulty) => {
     setDifficulty(newDifficulty);
@@ -100,7 +111,8 @@ export const GameProvider = ({ children }) => {
     setBoard(newBoard);
     setGameStatus('playing');
     setIsFirstTurn(true);
-    saveGameState({ difficulty: newDifficulty, board: newBoard, gameStatus: 'playing', isFirstTurn: true });
+    setFlagCount(calculateInitialFlags(newDifficulty));
+    saveGameState({ difficulty: newDifficulty, board: newBoard, gameStatus: 'playing', isFirstTurn: true, flagCount: calculateInitialFlags(newDifficulty) });
   }, []);
 
   return (
@@ -112,7 +124,9 @@ export const GameProvider = ({ children }) => {
       setGameStatus,
       resetGame,
       isFirstTurn,
-      setIsFirstTurn
+      setIsFirstTurn,
+      flagCount,
+      setFlagCount
     }}>
       {children}
     </GameContext.Provider>

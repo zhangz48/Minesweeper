@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { GameContext } from '../contexts/GameContext';
 
 const Cell = ({ cell, rowIndex, colIndex }) => {
-  const { board, setBoard, gameStatus, setGameStatus, isFirstTurn, setIsFirstTurn } = useContext(GameContext);
+  const { board, setBoard, gameStatus, setGameStatus, isFirstTurn, setIsFirstTurn, flagCount, setFlagCount } = useContext(GameContext);
 
   const handleClick = () => {
     if (gameStatus !== 'playing' || cell.isRevealed || cell.isFlagged) return;
@@ -30,7 +30,15 @@ const Cell = ({ cell, rowIndex, colIndex }) => {
     if (gameStatus !== 'playing' || cell.isRevealed) return;
 
     const newBoard = [...board];
-    newBoard[rowIndex][colIndex].isFlagged = !cell.isFlagged;
+
+    if (cell.isFlagged) {
+      newBoard[rowIndex][colIndex].isFlagged = false;
+      setFlagCount(flagCount + 1);
+    } else if (flagCount > 0) {
+      newBoard[rowIndex][colIndex].isFlagged = true;
+      setFlagCount(flagCount - 1);
+    }
+
     setBoard(newBoard);
   };
 

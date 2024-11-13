@@ -112,6 +112,17 @@ header button {
     cursor: pointer;
 }
 
+.flags-counter {
+    font-size: 1em;
+    font-weight: bold;
+    color: #ffcc00;
+    margin: 10px;
+}
+
+.flags-counter span {
+    color: #ff6666;
+}
+
 /* Game board */
 .board {
     display: grid;
